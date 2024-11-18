@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shoe Recognition App</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Link to your custom CSS file -->
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>Shoe Recognition</h1>
+
+      <!-- File Upload Section -->
+      <div class="file-upload">
+        <input
+          type="file"
+          id="shoeImage"
+          accept="image/*"
+          style="display: none"
+        />
+        <label for="shoeImage" class="file-label" aria-label="Choose shoe image"
+          >Choose File</label
+        >
+      </div>
+
+      <!-- Image Preview Section -->
+      <div class="image-preview">
+        <img
+          id="previewImage"
+          alt="Image Preview"
+          style="display: none; max-width: 100%; height: auto"
+        />
+      </div>
+
+      <!-- Problem Description Textbox -->
+      <div class="input-section">
+        <label for="problemDescription" class="input-label"
+          >Describe the problem with the shoe:</label
+        >
+        <textarea
+          id="problemDescription"
+          placeholder="e.g., Torn fabric, dirty sole"
+        ></textarea>
+      </div>
+
+      <!-- Affected Part Textbox -->
+      <div class="input-section">
+        <label for="affectedPart" class="input-label"
+          >Which part of the shoe is affected?</label
+        >
+        <textarea id="affectedPart" placeholder="e.g., Toe, Heel"></textarea>
+      </div>
+
+      <!-- Analyze Button -->
+      <div class="analyze-section">
+        <button id="submitButton" class="button" aria-label="Analyze image">
+          Analyze
+        </button>
+      </div>
+
+      <!-- Loading Spinner (visible when analysis is in progress) -->
+      <div id="spinner" class="spinner" style="display: none">Loading...</div>
+
+      <!-- Response Section for Analysis Results -->
+      <div id="resultContainer" class="result-container" style="display: none">
+        <!-- The JavaScript will populate this section with analysis results -->
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
