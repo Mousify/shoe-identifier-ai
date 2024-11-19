@@ -1,9 +1,24 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const submitButton = document.getElementById("submitButton");
-  const spinner = document.getElementById("spinner");
+document.addEventListener("DOMContentLoaded", () => {
+  const fileInput = document.getElementById("shoeImage");
+  const previewImage = document.getElementById("previewImage");
   const resultContainer = document.getElementById("resultContainer");
-  const fileInput = document.getElementById("imageInput"); // Assuming file input has id 'imageInput'
+  const spinner = document.getElementById("spinner");
+  const submitButton = document.getElementById("submitButton");
 
+  // Preview the uploaded image
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewImage.src = e.target.result;
+        previewImage.style.display = "block"; // Show the preview image
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Analyze the shoe image when the user clicks the submit button
   submitButton.addEventListener("click", async function () {
     const problemDescription =
       document.getElementById("problemDescription").value;
@@ -24,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const base64Image = await convertImageToBase64(imageFile);
 
       // Send the image and problem description to the backend
-      const response = await fetch("/api/analyze-shoe", {
+      const response = await fetch("http://192.168.1.163:3000/analyze-shoe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,40 +59,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Convert the image file to Base64 string
-  function convertImageToBase64(imageFile) {
+  // Function to handle image upload and convert it to Base64
+  function convertImageToBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onloadend = function () {
-        resolve(reader.result.split(",")[1]); // Get Base64 part (strip out the "data:image/*;base64," part)
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(imageFile);
+      reader.onload = () => resolve(reader.result.split(",")[1]); // Extract the Base64 string
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file); // Read the image file as a data URL
     });
   }
 
-  // Function to display results dynamically based on the AI's response
+  // Function to display results with reduced gaps
   function displayResults(data) {
     // Check if data is a string and parse it if necessary
     if (typeof data === "string") {
       data = JSON.parse(data); // Parse the string into a JavaScript object
     }
 
-    // Create and display HTML content based on the response from AI
+    // Create a formatted string for display with reduced gaps and minimal whitespace
     resultContainer.innerHTML = `
       <div><strong>Brand and Model:</strong> ${
         data.brandAndModel || "Not Available"
       }</div>
-
+      
       <div><strong>Materials:</strong></div>
       <ul style="margin: 0; padding-left: 10px;">
         ${Object.entries(data.materials || {})
           .map(
             ([part, material]) => `
-          <li style="margin: 2px 0;"><strong>${
-            part.charAt(0).toUpperCase() + part.slice(1)
-          }:</strong> ${material}</li>
-        `
+              <li style="margin: 2px 0;"><strong>${
+                part.charAt(0).toUpperCase() + part.slice(1)
+              }:</strong> ${material}</li>
+          `
           )
           .join("")}
       </ul>
@@ -88,12 +101,12 @@ document.addEventListener("DOMContentLoaded", function () {
           ? data.cleaningRecommendations
               .map(
                 (rec) => `
-          <div><strong>Affected Part: ${rec.affectedPart}</strong></div>
-          <ul style="margin: 0; padding-left: 10px;">
-              ${rec.recommendations
-                .map((r) => `<li style="margin: 2px 0;">${r}</li>`)
-                .join("")}
-          </ul>
+            <div><strong>Affected Part: ${rec.affectedPart}</strong></div>
+            <ul style="margin: 0; padding-left: 10px;">
+                ${rec.recommendations
+                  .map((r) => `<li style="margin: 2px 0;">${r}</li>`)
+                  .join("")}
+            </ul>
         `
               )
               .join("")
