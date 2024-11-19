@@ -1,30 +1,33 @@
+// api/analyze-shoe.js
 const { OpenAI } = require("openai"); // OpenAI SDK
-import { buffer } from "micro"; // For handling raw image data
+const { buffer } = require("micro"); // For handling raw image data
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY, // Securely access API key from environment
 });
 
-export const config = {
+// Configuration to disable body parsing for raw image data
+module.exports.config = {
   api: {
-    bodyParser: false, // Disable body parser for raw image handling
+    bodyParser: false, // Disable body parser for handling raw image body
   },
 };
 
-// The serverless function to analyze the shoe image
-export default async (req, res) => {
+module.exports = async (req, res) => {
   if (req.method === "POST") {
     try {
       // Parse the raw body (the image in base64 format)
       const rawBody = await buffer(req);
       const base64Image = rawBody.toString("base64");
 
+      // Extract the additional parameters (problem description, affected part)
       const { problemDescription, affectedPart } = req.body;
 
+      // Create a detailed prompt for the OpenAI API
       let prompt = `
       You are a shoe product e-shop assistant trained to identify shoe models, and materials, and provide cleaning recommendations. The customer has uploaded a photo of a shoe and described the problem. Based on this, your task is to:
 
-       Analyze the shoe in the provided image and return the information in the following format:
+      Analyze the shoe in the provided image and return the information in the following format:
 
       {
         "brandAndModel": "Shoe brand and model name",
@@ -48,6 +51,7 @@ export default async (req, res) => {
       }
       `;
 
+      // Add the problem description and affected part to the prompt if provided
       if (problemDescription) {
         prompt += ` The customer has described the following issue: "${problemDescription}".`;
       }
@@ -55,8 +59,9 @@ export default async (req, res) => {
         prompt += ` The affected part of the shoe is: "${affectedPart}".`;
       }
 
+      // Call OpenAI's chat completion API with the constructed prompt
       const response = await openai.chat.completions.create({
-        model: "gpt-4o-mini", // Use the correct model here
+        model: "gpt-4", // Use the correct model here (adjust as necessary)
         messages: [
           {
             role: "system",
@@ -83,6 +88,7 @@ export default async (req, res) => {
         response_format: "json_object",
       });
 
+      // Send the AI response back to the client
       res.status(200).json(response.choices[0].message.content);
     } catch (error) {
       console.error("Error processing image:", error);
