@@ -4,20 +4,12 @@
     {
       "src": "api/analyze-shoe.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "public/**/*",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/analyze-shoe",
       "dest": "/api/analyze-shoe.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
     }
   ]
 }
