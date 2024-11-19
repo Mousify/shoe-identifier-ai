@@ -10,10 +10,6 @@
     {
       "src": "/api/analyze-shoe",
       "dest": "/api/analyze-shoe.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/server.js"
     }
   ]
 }
