@@ -39,17 +39,20 @@ document.addEventListener("DOMContentLoaded", () => {
       const base64Image = await convertImageToBase64(imageFile);
 
       // Send the image and problem description to the backend
-      const response = await fetch("http://192.168.1.163:3000/analyze-shoe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          base64Image: base64Image,
-          problemDescription: problemDescription,
-          affectedPart: affectedPart,
-        }),
-      });
+      const response = await fetch(
+        "https://viskas-batam.vercel.app/analyze-shoe",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            base64Image: base64Image,
+            problemDescription: problemDescription,
+            affectedPart: affectedPart,
+          }),
+        }
+      );
 
       const data = await response.json();
       displayResults(data); // Call displayResults to handle the response data
